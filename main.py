@@ -1,6 +1,7 @@
 import requests
 import json
 import urllib.parse
+import bot_logger
 import bot_config
 
 def getMessages():
@@ -12,11 +13,13 @@ def getMessages():
 	for a in result:
 		b = {'mid': a[1], 'msg': a[6]}
 		if a[3] > 2E9:
-		 	b.update({'cid': int(a[3] - 2E9)})
+			b.update({'cid': int(a[3] - 2E9)})
+			log_msg = '\x1b[33mChat ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(b['cid'], b['mid'], b['msg'])
 		else:
 			b.update({'uid': a[3]})
+			log_msg = '\x1b[33mUser ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(b['mid'], b['mid'], b['msg'])
 		answerOn(b)
-		print(b)
+		bot_logger.printLog('getMessages', log_msg)
 	getMessages()
 
 
@@ -30,16 +33,17 @@ def getLongPollServer():
 	key = parsed_string['response']['key']
 	server = parsed_string['response']['server']
 	ts = parsed_string['response']['ts']
+	bot_logger.printLog('getLongPollServer', '\x1b[33mSUCCES!!!\x1b[0m')
 	getMessages()
 
 def answerOn(msg):
 	def answer(answer):
 		answer = urllib.parse.quote(answer, safe='~()*!.\'')
 		if 'cid' in msg:
-			print('answering in chat:', answer)
+			bot_logger.printLog('answering in Chat', answer)
 			response = requests.get('https://api.vk.com/method/messages.send?chat_id={}&message={}&access_token={}'.format(msg['cid'], answer, bot_config.vk_token))
 		else:
-			print('answering to user:', answer)
+			bot_logger.printLog('answering to User', answer)
 			response = requests.get('https://api.vk.com/method/messages.send?user_id={}&message={}&access_token={}'.format(msg['uid'], answer, bot_config.vk_token))
 	getAnswer(msg['msg'], answer)
 
