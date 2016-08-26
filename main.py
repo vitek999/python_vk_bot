@@ -1,26 +1,25 @@
 import requests
-import json
 import urllib.parse
 import bot_logger
 import bot_config
 
 def getMessages():
-	response = requests.get('http://{}?act=a_check&key={}&ts={}&wait=25&mode=1'.format(server, key, ts))
-	res = response.json()
-	global ts
-	ts = res['ts']
-	result = list(filter(lambda x: 4 == x[0], res['updates']))
-	for a in result:
-		b = {'mid': a[1], 'msg': a[6]}
-		if a[3] > 2E9:
-			b.update({'cid': int(a[3] - 2E9)})
-			log_msg = '\x1b[33mChat ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(b['cid'], b['mid'], b['msg'])
-		else:
-			b.update({'uid': a[3]})
-			log_msg = '\x1b[33mUser ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(b['mid'], b['mid'], b['msg'])
-		answerOn(b)
-		bot_logger.printLog('getMessages', log_msg)
-	getMessages()
+	while 1 :
+		response = requests.get('http://{}?act=a_check&key={}&ts={}&wait=25&mode=1'.format(server, key, ts))
+		res = response.json()
+		global ts
+		ts = res['ts']
+		result = list(filter(lambda x: 4 == x[0], res['updates']))
+		for a in result:
+			b = {'mid': a[1], 'msg': a[6]}
+			if a[3] > 2E9:
+				b.update({'cid': int(a[3] - 2E9)})
+				log_msg = '\x1b[33mChat ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(b['cid'], b['mid'], b['msg'])
+			else:
+				b.update({'uid': a[3]})
+				log_msg = '\x1b[33mUser ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(b['mid'], b['mid'], b['msg'])
+			answerOn(b)
+			bot_logger.printLog('getMessages', log_msg)
 
 
 

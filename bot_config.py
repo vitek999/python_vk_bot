@@ -1,1 +1,1 @@
-vk_token = 'Your Token'
+vk_token = input('Your Token: ')
