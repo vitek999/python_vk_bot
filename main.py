@@ -13,7 +13,7 @@ def getMessages():
         result = list(filter(lambda x: 4 == x[0], res['updates']))
         for a in result:
             b = {'mid': a[1], 'msg': a[6]}
-            if a[2]&int('0b10',2) == 2 #Ignore bot own messages
+            if a[2]&int('0b10',2) == 2: #Ignore bot own messages
                 continue;
             if a[3] > 2E9:
                 b.update({'cid': int(a[3] - 2E9)})
