@@ -13,6 +13,8 @@ def getMessages():
         result = list(filter(lambda x: 4 == x[0], res['updates']))
         for a in result:
             b = {'mid': a[1], 'msg': a[6]}
+            if a[2]&int('0b10',2) == 2: #Ignore bot own messages
+                continue;
             if a[3] > 2E9:
                 b.update({'cid': int(a[3] - 2E9)})
                 log_msg = '\x1b[33mChat ID:\x1b[0m {} \x1b[33mmessage ID:\x1b[0m {} \x1b[33mmessage:\x1b[0m {}'.format(
@@ -26,20 +28,23 @@ def getMessages():
 
 
 def getLongPollServer():
+    #TODO: Build request from object
     response = requests.get('https://api.vk.com/method/messages.getLongPollServer?access_token=' + bot_config.vk_token)
     parsed_string = response.json()
     global key
     global server
     global ts
+    #TODO: Use destructors?
     key = parsed_string['response']['key']
     server = parsed_string['response']['server']
     ts = parsed_string['response']['ts']
-    bot_logger.printLog('getLongPollServer', '\x1b[33mSUCCES!!!\x1b[0m')
+    bot_logger.printLog('getLongPollServer', '\x1b[33mSUCCESS!!!\x1b[0m')
     getMessages()
 
 
 def answerOn(msg):
     def answer(answer):
+        #TODO: Refactor to universal answer function
         answer = urllib.parse.quote(answer, safe='~()*!.\'')
         if 'cid' in msg:
             bot_logger.printLog('answering in Chat', answer)
@@ -59,7 +64,7 @@ def answerOn(msg):
 
 def getAnswer(msg, answer):
     if msg == 'test':
-        answer('test succes!')
+        answer('test success!')
 
 
 getLongPollServer()
